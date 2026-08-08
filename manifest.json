@@ -1,0 +1,8 @@
+{
+  "name":"Discover Sri Lanka",
+  "short_name":"Sri Lanka",
+  "start_url":"./index.html",
+  "display":"standalone",
+  "background_color":"#0d2137",
+  "theme_color":"#0d2137"
+}
