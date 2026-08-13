@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discover Sri Lanka — One Island. Endless Wonders.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">
+<script>
+  // Apply saved theme before first paint to avoid a flash of the wrong theme
+  (function () {
+    var saved = localStorage.getItem('slTheme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<style>
+/* ===== TOKENS ===== */
+:root {
+  --navy: #0D2137;
+  --ocean: #1A4F7C;
+  --emerald: #0A7D55;
+  --jade: #12A870;
+  --gold: #E8A320;
+  --amber: #F4C03F;
+  --saffron: #E05A1E;
+  --coral: #F0784A;
+  --cream: #FDF8F0;
+  --sand: #F5EDD8;
+  --charcoal: #1C1C1E;
+  --text: #2D2D2D;
+  --text-muted: #6B7280;
+  --border: rgba(0,0,0,0.1);
+  --surface: #fff;
+  --surface2: #F9F7F3;
+  --hero-overlay: rgba(13,33,55,0.55);
+  --radius: 16px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.10);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.15);
+  --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+[data-theme="dark"] {
+  --navy: #0A1929;
+  --cream: #0F1923;
+  --sand: #162030;
+  --text: #E8EDF2;
+  --text-muted: #8FA3B8;
+  --border: rgba(255,255,255,0.08);
+  --surface: #142030;
+  --surface2: #1A2A3A;
+  --hero-overlay: rgba(6,18,32,0.65);
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: var(--font-body); color: var(--text); background: var(--cream); line-height: 1.6; overflow-x: hidden; }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+ul { list-style: none; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 99px; }
+
+/* ===== NAV ===== */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 70px;
+  background: transparent;
+  transition: background var(--transition), box-shadow var(--transition);
+}
+#navbar.scrolled {
+  background: var(--navy);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-display); font-size: 1.4rem; color: #fff; font-weight: 700;
+}
+.nav-logo .flag { font-size: 1.6rem; }
+.nav-links {
+  display: flex; align-items: center; gap: 0.2rem;
+}
+.nav-links a {
+  color: rgba(255,255,255,0.9); padding: 0.4rem 0.75rem;
+  border-radius: 6px; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.02em;
+  transition: background var(--transition), color var(--transition);
+}
+.nav-links a:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.nav-controls { display: flex; align-items: center; gap: 0.75rem; }
+.btn-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.12); color: #fff; font-size: 1rem;
+  transition: background var(--transition);
+}
+.btn-icon:hover { background: rgba(255,255,255,0.22); }
+.btn-search-trigger {
+  background: rgba(255,255,255,0.12); color: #fff;
+  padding: 0.35rem 1rem; border-radius: 99px; font-size: 0.82rem;
+  display: flex; align-items: center; gap: 6px;
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: background var(--transition);
+}
+.btn-search-trigger:hover { background: rgba(255,255,255,0.22); }
+.hamburger { display: none; flex-direction: column; gap: 5px; padding: 4px; }
+.hamburger span { width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: var(--transition); }
+
+/* ===== SEARCH OVERLAY ===== */
+#search-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(10,25,41,0.95); backdrop-filter: blur(8px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity var(--transition);
+}
+#search-overlay.active { opacity: 1; pointer-events: all; }
+.search-box { width: min(600px, 90vw); }
+.search-box h2 { color: #fff; font-family: var(--font-display); font-size: 2rem; margin-bottom: 1.5rem; text-align: center; }
+.search-input-wrap { position: relative; }
+.search-input-wrap input {
+  width: 100%; padding: 1rem 3rem 1rem 1.5rem;
+  font-size: 1.1rem; border-radius: 12px; border: 2px solid var(--gold);
+  background: rgba(255,255,255,0.07); color: #fff;
+  font-family: var(--font-body); outline: none;
+}
+.search-input-wrap input::placeholder { color: rgba(255,255,255,0.4); }
+.search-close {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  color: rgba(255,255,255,0.6); font-size: 1.4rem; cursor: pointer;
+}
+.search-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
+.search-tag {
+  padding: 0.3rem 0.85rem; border-radius: 99px;
+  background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7);
+  font-size: 0.82rem; cursor: pointer; transition: background var(--transition);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.search-tag:hover { background: rgba(232,163,32,0.3); color: var(--amber); }
+#search-results { margin-top: 1.5rem; max-height: 300px; overflow-y: auto; }
+.search-result-item {
+  padding: 0.75rem 1rem; border-radius: 8px; color: rgba(255,255,255,0.8);
+  font-size: 0.9rem; cursor: pointer; transition: background var(--transition);
+  display: flex; align-items: center; gap: 10px;
+}
+.search-result-item:hover { background: rgba(255,255,255,0.1); }
+.search-result-item .icon { color: var(--gold); }
+
+/* ===== HERO ===== */
+#hero {
+  height: 100vh; min-height: 600px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.hero-slides { position: absolute; inset: 0; }
+.hero-slide {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  opacity: 0; transition: opacity 1.5s ease;
+}
+.hero-slide.active { opacity: 1; }
+.hero-slide:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1588422600757-d048faa4fccd?w=1800&q=85'); }
+.hero-slide:nth-child(2) { background-image: url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1800&q=85'); }
+.hero-slide:nth-child(3) { background-image: url('https://images.unsplash.com/photo-1593693397690-362cb9666fc2?w=1800&q=85'); }
+.hero-slide:nth-child(4) { background-image: url('https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1800&q=85'); }
+.hero-overlay { position: absolute; inset: 0; background: var(--hero-overlay); }
+.hero-content {
+  position: relative; z-index: 2; text-align: center;
+  padding: 2rem; max-width: 800px;
+  animation: fadeUp 1.2s ease both;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(232,163,32,0.2); border: 1px solid rgba(232,163,32,0.4);
+  color: var(--amber); padding: 0.3rem 1rem; border-radius: 99px;
+  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.hero-title {
+  font-family: var(--font-display); color: #fff;
+  font-size: clamp(2.5rem, 7vw, 5.5rem); line-height: 1.05;
+  margin-bottom: 0.5rem; font-weight: 900;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+.hero-title .accent { color: var(--amber); }
+.hero-tagline {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem); color: rgba(255,255,255,0.85);
+  margin-bottom: 2.5rem; font-style: italic;
+}
+.hero-cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), var(--saffron));
+  color: #fff; padding: 0.85rem 2rem; border-radius: 99px;
+  font-weight: 600; font-size: 0.95rem;
+  box-shadow: 0 4px 20px rgba(232,163,32,0.4);
+  transition: transform var(--transition), box-shadow var(--transition);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,163,32,0.5); }
+.btn-outline {
+  background: rgba(255,255,255,0.12); color: #fff;
+  padding: 0.85rem 2rem; border-radius: 99px;
+  font-weight: 500; font-size: 0.95rem;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  transition: background var(--transition);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-outline:hover { background: rgba(255,255,255,0.22); }
+.hero-scroll {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  color: rgba(255,255,255,0.6); font-size: 0.75rem; letter-spacing: 0.1em;
+  animation: bounce 2s ease infinite;
+}
+.hero-scroll .arrow { font-size: 1.2rem; }
+.hero-dots {
+  position: absolute; bottom: 3.5rem; right: 2rem; z-index: 2;
+  display: flex; gap: 6px;
+}
+.hero-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.4); cursor: pointer; transition: var(--transition);
+}
+.hero-dot.active { background: var(--amber); width: 20px; border-radius: 3px; }
+
+/* ===== STATS BAR ===== */
+.stats-bar {
+  background: var(--navy);
+  padding: 1.5rem 2rem;
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 2rem;
+}
+.stat-item { text-align: center; color: #fff; }
+.stat-num { font-size: 1.8rem; font-weight: 700; color: var(--amber); font-family: var(--font-display); line-height: 1; }
+.stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.55); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+
+/* ===== SECTION BASE ===== */
+section { padding: 5rem 2rem; }
+.section-inner { max-width: 1200px; margin: 0 auto; }
+.section-eyebrow {
+  display: inline-block; font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--saffron); margin-bottom: 0.75rem;
+}
+.section-title {
+  font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--navy); line-height: 1.15; margin-bottom: 1rem;
+}
+[data-theme="dark"] .section-title { color: #fff; }
+.section-sub { font-size: 1.05rem; color: var(--text-muted); max-width: 600px; line-height: 1.7; }
+.section-header { margin-bottom: 3rem; }
+
+/* ===== QUICK LINKS ===== */
+#quick-links { background: var(--surface2); padding: 3rem 2rem; }
+.quick-links-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1rem; max-width: 1100px; margin: 0 auto;
+}
+.quick-link-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 1.5rem 1rem; text-align: center;
+  border: 1.5px solid var(--border);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  cursor: pointer;
+}
+.quick-link-card:hover {
+  transform: translateY(-4px); box-shadow: var(--shadow);
+  border-color: var(--gold);
+}
+.quick-link-card .ql-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.quick-link-card .ql-label { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+
+/* ===== FEATURED DESTINATIONS ===== */
+#destinations { background: var(--cream); }
+.dest-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto;
+  gap: 1rem;
+}
+.dest-card {
+  position: relative; border-radius: var(--radius); overflow: hidden;
+  cursor: pointer;
+}
+.dest-card:nth-child(1) { grid-column: span 7; height: 420px; }
+.dest-card:nth-child(2) { grid-column: span 5; height: 420px; }
+.dest-card:nth-child(3) { grid-column: span 4; height: 320px; }
+.dest-card:nth-child(4) { grid-column: span 4; height: 320px; }
+.dest-card:nth-child(5) { grid-column: span 4; height: 320px; }
+.dest-img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.dest-card:hover .dest-img { transform: scale(1.07); }
+.dest-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(10,20,35,0.85) 0%, transparent 60%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 1.5rem;
+}
+.dest-tag {
+  display: inline-block; background: var(--saffron); color: #fff;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.2rem 0.6rem; border-radius: 4px; margin-bottom: 0.4rem; align-self: flex-start;
+}
+.dest-name { font-family: var(--font-display); color: #fff; font-size: 1.5rem; font-weight: 700; line-height: 1.1; }
+.dest-meta { font-size: 0.78rem; color: rgba(255,255,255,0.65); margin-top: 4px; }
+.dest-card:nth-child(3) .dest-name,
+.dest-card:nth-child(4) .dest-name,
+.dest-card:nth-child(5) .dest-name { font-size: 1.1rem; }
+
+/* ===== ABOUT ===== */
+#about { background: var(--surface2); }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+.about-image { border-radius: var(--radius); overflow: hidden; position: relative; }
+.about-image img { width: 100%; height: 480px; object-fit: cover; }
+.about-badge {
+  position: absolute; bottom: -20px; right: -20px;
+  background: var(--gold); color: var(--navy); border-radius: 50%;
+  width: 110px; height: 110px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-weight: 700;
+  box-shadow: var(--shadow-lg);
+}
+.about-badge .num { font-size: 1.8rem; font-family: var(--font-display); line-height: 1; }
+.about-badge .lbl { font-size: 0.65rem; text-align: center; letter-spacing: 0.04em; }
+.about-content { padding: 1rem; }
+.about-content p { color: var(--text-muted); margin-bottom: 1.2rem; line-height: 1.8; }
+.about-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+.fact-card {
+  background: var(--surface); border-radius: var(--radius-sm);
+  padding: 1rem; border-left: 3px solid var(--emerald);
+}
+.fact-card .fc-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.fact-card .fc-value { font-weight: 700; color: var(--navy); font-size: 0.95rem; margin-top: 2px; }
+[data-theme="dark"] .fact-card .fc-value { color: #fff; }
+
+/* ===== NATIONAL SYMBOLS ===== */
+.symbols-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-top: 2rem; }
+.symbol-card {
+  background: var(--surface); border-radius: var(--radius-sm);
+  padding: 1.5rem; text-align: center;
+  border: 1px solid var(--border);
+  transition: box-shadow var(--transition);
+}
+.symbol-card:hover { box-shadow: var(--shadow); }
+.symbol-card .s-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.symbol-card .s-type { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.symbol-card .s-name { font-weight: 700; font-size: 0.9rem; color: var(--navy); margin-top: 2px; }
+[data-theme="dark"] .symbol-card .s-name { color: #fff; }
+
+/* ===== TIMELINE ===== */
+#history { background: var(--navy); color: #fff; }
+#history .section-title { color: #fff; }
+#history .section-sub { color: rgba(255,255,255,0.6); }
+.timeline { position: relative; max-width: 800px; margin: 0 auto; }
+.timeline::before {
+  content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+  top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.15);
+}
+.tl-item {
+  display: grid; grid-template-columns: 1fr 60px 1fr;
+  gap: 0; margin-bottom: 2rem; align-items: start;
+}
+.tl-item:nth-child(odd) .tl-content { grid-column: 1; text-align: right; padding-right: 2rem; }
+.tl-item:nth-child(odd) .tl-mid { grid-column: 2; }
+.tl-item:nth-child(odd) .tl-empty { grid-column: 3; }
+.tl-item:nth-child(even) .tl-empty { grid-column: 1; }
+.tl-item:nth-child(even) .tl-mid { grid-column: 2; }
+.tl-item:nth-child(even) .tl-content { grid-column: 3; text-align: left; padding-left: 2rem; }
+.tl-mid { display: flex; justify-content: center; }
+.tl-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--gold); border: 3px solid var(--navy);
+  box-shadow: 0 0 0 3px rgba(232,163,32,0.3); margin-top: 4px;
+  flex-shrink: 0;
+}
+.tl-year { font-size: 0.75rem; color: var(--amber); font-weight: 700; letter-spacing: 0.06em; }
+.tl-event { font-size: 0.95rem; color: rgba(255,255,255,0.85); margin-top: 2px; line-height: 1.4; }
+.tl-desc { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+/* ===== DESTINATIONS DETAIL ===== */
+#all-destinations { background: var(--cream); }
+.dest-detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+.dest-detail-card {
+  background: var(--surface); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.dest-detail-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+.ddc-img { width: 100%; height: 220px; object-fit: cover; }
+.ddc-body { padding: 1.5rem; }
+.ddc-tag {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--saffron); margin-bottom: 0.3rem;
+}
+.ddc-name { font-family: var(--font-display); font-size: 1.4rem; color: var(--navy); margin-bottom: 0.5rem; }
+[data-theme="dark"] .ddc-name { color: #fff; }
+.ddc-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; }
+.ddc-meta { display: flex; gap: 1rem; }
+.ddc-meta-item { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+.ddc-meta-item .mi { font-size: 0.85rem; }
+.ddc-best-time {
+  margin-top: 0.75rem; padding: 0.5rem 0.75rem;
+  background: rgba(10,125,85,0.08); border-radius: var(--radius-sm);
+  font-size: 0.78rem; color: var(--emerald); font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ===== CULTURE ===== */
+#culture { background: var(--surface2); }
+.culture-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+.culture-card {
+  border-radius: var(--radius); overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: transform var(--transition);
+}
+.culture-card:hover { transform: translateY(-4px); }
+.culture-card-img { width: 100%; height: 200px; object-fit: cover; }
+.culture-card-body { padding: 1.5rem; }
+.culture-card-body h3 { font-family: var(--font-display); font-size: 1.2rem; color: var(--navy); margin-bottom: 0.5rem; }
+[data-theme="dark"] .culture-card-body h3 { color: #fff; }
+.culture-card-body p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+/* ===== FESTIVALS ===== */
+.festival-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 2rem; }
+.festival-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 1.5rem; text-align: center;
+  border-top: 3px solid var(--saffron);
+  transition: box-shadow var(--transition);
+}
+.festival-card:hover { box-shadow: var(--shadow); }
+.festival-card .fest-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.festival-card h4 { font-family: var(--font-display); font-size: 1rem; color: var(--navy); margin-bottom: 0.3rem; }
+[data-theme="dark"] .festival-card h4 { color: #fff; }
+.festival-card p { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ===== FOOD ===== */
+#food { background: var(--cream); }
+.food-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+.food-card {
+  background: var(--surface); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow);
+  transition: transform var(--transition);
+}
+.food-card:hover { transform: translateY(-4px); }
+.food-card img { width: 100%; height: 180px; object-fit: cover; }
+.food-body { padding: 1.2rem; }
+.food-body h3 { font-family: var(--font-display); font-size: 1.15rem; color: var(--navy); margin-bottom: 0.3rem; }
+[data-theme="dark"] .food-body h3 { color: #fff; }
+.food-body p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+.food-region {
+  margin-top: 0.5rem; font-size: 0.7rem; color: var(--saffron);
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+/* ===== WILDLIFE ===== */
+#wildlife { background: var(--emerald); color: #fff; }
+#wildlife .section-title { color: #fff; }
+#wildlife .section-sub { color: rgba(255,255,255,0.75); }
+.wildlife-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.wildlife-card {
+  background: rgba(255,255,255,0.1); border-radius: var(--radius);
+  overflow: hidden; border: 1px solid rgba(255,255,255,0.15);
+  transition: background var(--transition);
+}
+.wildlife-card:hover { background: rgba(255,255,255,0.18); }
+.wildlife-card img { width: 100%; height: 160px; object-fit: cover; }
+.wildlife-card-body { padding: 1rem; }
+.wildlife-card-body h3 { color: #fff; font-family: var(--font-display); font-size: 1.05rem; margin-bottom: 0.3rem; }
+.wildlife-card-body p { font-size: 0.8rem; color: rgba(255,255,255,0.7); line-height: 1.5; }
+.conservation-badge {
+  display: inline-block; margin-top: 0.5rem;
+  padding: 0.2rem 0.6rem; border-radius: 4px;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
+}
+.endangered { background: rgba(224,90,30,0.3); color: #FFAA77; }
+.vulnerable { background: rgba(232,163,32,0.3); color: var(--amber); }
+.protected { background: rgba(10,125,85,0.3); color: #7FEFC7; }
+
+/* ===== BEACHES ===== */
+#beaches { background: var(--cream); }
+.beaches-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.beach-tab {
+  padding: 0.5rem 1.25rem; border-radius: 99px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  background: var(--surface); border: 1.5px solid var(--border);
+  color: var(--text-muted); transition: var(--transition);
+}
+.beach-tab.active {
+  background: var(--ocean); color: #fff; border-color: var(--ocean);
+}
+.beaches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+.beach-card {
+  border-radius: var(--radius); overflow: hidden; position: relative;
+  box-shadow: var(--shadow); transition: transform var(--transition);
+}
+.beach-card:hover { transform: translateY(-4px); }
+.beach-card img { width: 100%; height: 240px; object-fit: cover; }
+.beach-info {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(10,20,35,0.9), transparent);
+  padding: 1.25rem;
+}
+.beach-name { font-family: var(--font-display); color: #fff; font-size: 1.25rem; font-weight: 700; }
+.beach-coast { font-size: 0.72rem; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 0.08em; }
+.beach-icons { display: flex; gap: 6px; margin-top: 4px; }
+.beach-icon { font-size: 0.85rem; }
+
+/* ===== MOUNTAINS ===== */
+#mountains { background: var(--navy); color: #fff; }
+#mountains .section-title { color: #fff; }
+.mountain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+.mountain-card {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius); overflow: hidden;
+  transition: background var(--transition), transform var(--transition);
+}
+.mountain-card:hover { background: rgba(255,255,255,0.1); transform: translateY(-4px); }
+.mountain-card img { width: 100%; height: 180px; object-fit: cover; }
+.mountain-body { padding: 1.25rem; }
+.mountain-body h3 { color: #fff; font-family: var(--font-display); font-size: 1.15rem; margin-bottom: 0.75rem; }
+.mountain-stats { display: flex; gap: 1.5rem; margin-bottom: 0.75rem; }
+.mstat { text-align: center; }
+.mstat .mv { font-size: 1rem; font-weight: 700; color: var(--amber); }
+.mstat .ml { font-size: 0.65rem; color: rgba(255,255,255,0.5); text-transform: uppercase; }
+.difficulty {
+  display: inline-block; padding: 0.2rem 0.7rem; border-radius: 4px;
+  font-size: 0.7rem; font-weight: 700;
+}
+.easy { background: rgba(10,125,85,0.3); color: #7FEFC7; }
+.moderate { background: rgba(232,163,32,0.3); color: var(--amber); }
+.hard { background: rgba(224,90,30,0.3); color: #FFAA77; }
+
+/* ===== TRANSPORT ===== */
+#transport { background: var(--surface2); }
+.transport-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+.transport-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 1.75rem; text-align: center;
+  border: 1.5px solid var(--border);
+  transition: box-shadow var(--transition), border-color var(--transition);
+}
+.transport-card:hover { box-shadow: var(--shadow); border-color: var(--gold); }
+.transport-card .tc-icon { font-size: 2.8rem; margin-bottom: 1rem; }
+.transport-card h3 { font-family: var(--font-display); font-size: 1.1rem; color: var(--navy); margin-bottom: 0.5rem; }
+[data-theme="dark"] .transport-card h3 { color: #fff; }
+.transport-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+.transport-card .tc-tip {
+  margin-top: 0.75rem; padding: 0.4rem 0.75rem;
+  background: rgba(232,163,32,0.1); border-radius: 6px;
+  font-size: 0.75rem; color: var(--gold); font-weight: 600;
+}
+
+/* ===== ECONOMY & EDUCATION ===== */
+#economy { background: var(--cream); }
+.economy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+.eco-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 1.5rem; text-align: center;
+  border-bottom: 3px solid var(--emerald);
+  box-shadow: var(--shadow);
+}
+.eco-card .eco-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
+.eco-card h3 { font-size: 1rem; color: var(--navy); font-weight: 700; margin-bottom: 0.3rem; }
+[data-theme="dark"] .eco-card h3 { color: #fff; }
+.eco-card p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+.eco-card .eco-stat { font-size: 1.3rem; font-weight: 700; color: var(--emerald); margin-top: 0.5rem; font-family: var(--font-display); }
+
+/* ===== UNESCO ===== */
+.unesco-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; margin-top: 2rem; }
+.unesco-card {
+  background: var(--surface); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow);
+  border-left: 4px solid var(--gold);
+}
+.unesco-card img { width: 100%; height: 160px; object-fit: cover; }
+.unesco-card-body { padding: 1rem; }
+.unesco-year { font-size: 0.7rem; color: var(--gold); font-weight: 700; letter-spacing: 0.06em; }
+.unesco-card-body h3 { font-family: var(--font-display); font-size: 1rem; color: var(--navy); margin: 0.2rem 0; }
+[data-theme="dark"] .unesco-card-body h3 { color: #fff; }
+.unesco-card-body p { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ===== INTERACTIVE TOOLS ===== */
+#interactive { background: var(--surface2); }
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+.tool-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 2rem; box-shadow: var(--shadow);
+}
+.tool-card h3 { font-family: var(--font-display); font-size: 1.1rem; color: var(--navy); margin-bottom: 1rem; }
+[data-theme="dark"] .tool-card h3 { color: #fff; }
+
+/* Weather widget */
+.weather-widget { text-align: center; }
+.weather-city-select {
+  width: 100%; padding: 0.6rem 1rem; border-radius: 8px;
+  border: 1.5px solid var(--border); background: var(--surface2);
+  color: var(--text); font-family: var(--font-body); font-size: 0.9rem;
+  margin-bottom: 1rem; outline: none;
+}
+.weather-display { display: flex; align-items: center; justify-content: center; gap: 1rem; }
+.weather-icon { font-size: 3rem; }
+.weather-temp { font-size: 2.5rem; font-weight: 700; color: var(--navy); font-family: var(--font-display); }
+[data-theme="dark"] .weather-temp { color: #fff; }
+.weather-desc { font-size: 0.85rem; color: var(--text-muted); }
+.weather-details { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; }
+.weather-detail { text-align: center; }
+.weather-detail .wd-val { font-weight: 700; color: var(--ocean); font-size: 0.95rem; }
+.weather-detail .wd-lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+
+/* Currency converter */
+.currency-converter label { display: block; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+.currency-converter input, .currency-converter select {
+  width: 100%; padding: 0.6rem 1rem; border-radius: 8px;
+  border: 1.5px solid var(--border); background: var(--surface2);
+  color: var(--text); font-family: var(--font-body); font-size: 0.9rem;
+  margin-bottom: 1rem; outline: none;
+}
+.convert-arrow { text-align: center; font-size: 1.5rem; margin: -0.5rem 0; color: var(--text-muted); }
+.convert-result { background: var(--emerald); color: #fff; border-radius: 8px; padding: 1rem; text-align: center; }
+.convert-result .cr-amount { font-size: 1.8rem; font-weight: 700; font-family: var(--font-display); }
+.convert-result .cr-label { font-size: 0.78rem; opacity: 0.8; }
+
+/* Language card */
+.lang-switcher { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.lang-btn {
+  padding: 0.4rem 1rem; border-radius: 99px;
+  border: 1.5px solid var(--border); font-size: 0.82rem;
+  color: var(--text); cursor: pointer; transition: var(--transition);
+  font-family: var(--font-body);
+}
+.lang-btn.active { background: var(--ocean); color: #fff; border-color: var(--ocean); }
+.lang-phrases .phrase { margin-bottom: 0.75rem; }
+.lang-phrases .ph-en { font-size: 0.78rem; color: var(--text-muted); }
+.lang-phrases .ph-local { font-size: 1rem; font-weight: 600; color: var(--navy); }
+[data-theme="dark"] .lang-phrases .ph-local { color: #fff; }
+.ph-romanized { font-size: 0.78rem; color: var(--emerald); font-style: italic; }
+
+/* Map placeholder */
+.map-placeholder {
+  background: linear-gradient(135deg, #e8f4fd, #d0e8f5);
+  border-radius: var(--radius); height: 280px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  border: 1.5px solid var(--border);
+}
+[data-theme="dark"] .map-placeholder { background: linear-gradient(135deg, #1a2a3a, #0f1e2c); }
+.map-sri-lanka { font-size: 6rem; line-height: 1; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2)); }
+.map-pins { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem; }
+.map-pin {
+  background: var(--saffron); color: #fff;
+  padding: 0.2rem 0.6rem; border-radius: 99px;
+  font-size: 0.68rem; font-weight: 600;
+}
+
+/* ===== GALLERY ===== */
+#gallery { background: var(--cream); }
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 200px;
+  gap: 8px;
+}
+.gallery-item {
+  overflow: hidden; border-radius: var(--radius-sm);
+  cursor: pointer; position: relative;
+}
+.gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+.gallery-item:nth-child(6) { grid-column: span 2; }
+.gallery-item img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.gallery-item:hover img { transform: scale(1.07); }
+.gallery-item-overlay {
+  position: absolute; inset: 0;
+  background: rgba(10,20,35,0); transition: var(--transition);
+  display: flex; align-items: center; justify-content: center;
+}
+.gallery-item:hover .gallery-item-overlay { background: rgba(10,20,35,0.3); }
+.gallery-zoom { color: #fff; font-size: 2rem; opacity: 0; transition: var(--transition); }
+.gallery-item:hover .gallery-zoom { opacity: 1; }
+
+/* ===== NEWSLETTER ===== */
+#newsletter {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--ocean) 100%);
+  padding: 5rem 2rem; text-align: center; color: #fff;
+}
+#newsletter h2 { font-family: var(--font-display); font-size: clamp(1.8rem, 3.5vw, 2.8rem); margin-bottom: 0.75rem; }
+#newsletter p { color: rgba(255,255,255,0.7); max-width: 500px; margin: 0 auto 2rem; }
+.newsletter-form { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+.newsletter-form input {
+  padding: 0.85rem 1.5rem; border-radius: 99px;
+  border: 1.5px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08);
+  color: #fff; font-family: var(--font-body); font-size: 0.95rem;
+  outline: none; min-width: 280px;
+}
+.newsletter-form input::placeholder { color: rgba(255,255,255,0.4); }
+
+/* ===== FOOTER ===== */
+footer {
+  background: #060E18; color: rgba(255,255,255,0.7);
+  padding: 4rem 2rem 2rem;
+}
+.footer-inner { max-width: 1200px; margin: 0 auto; }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+.footer-brand .fb-logo { font-family: var(--font-display); font-size: 1.6rem; color: #fff; margin-bottom: 0.75rem; }
+.footer-brand p { font-size: 0.85rem; line-height: 1.7; max-width: 280px; }
+.footer-col h4 { color: #fff; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+.footer-col a { display: block; font-size: 0.85rem; margin-bottom: 0.5rem; color: rgba(255,255,255,0.6); transition: color var(--transition); }
+.footer-col a:hover { color: var(--amber); }
+.social-links { display: flex; gap: 0.75rem; margin-top: 1rem; }
+.social-link {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; color: rgba(255,255,255,0.7); transition: background var(--transition), color var(--transition);
+}
+.social-link:hover { background: var(--gold); color: #fff; }
+.footer-bottom {
+  padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+  font-size: 0.78rem; color: rgba(255,255,255,0.4);
+  gap: 1rem;
+}
+.footer-bottom .flag-row { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.5); }
+
+/* ===== LIGHTBOX ===== */
+#lightbox {
+  position: fixed; inset: 0; z-index: 3000;
+  background: rgba(0,0,0,0.9); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity var(--transition);
+}
+#lightbox.active { opacity: 1; pointer-events: all; }
+#lightbox img { max-width: 90vw; max-height: 85vh; border-radius: var(--radius); object-fit: contain; }
+.lightbox-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  color: #fff; font-size: 2rem; cursor: pointer;
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.1); border-radius: 50%;
+}
+
+/* ===== SCROLL TO TOP ===== */
+#scroll-top {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 500;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--gold); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; box-shadow: var(--shadow);
+  opacity: 0; pointer-events: none; transition: var(--transition);
+}
+#scroll-top.visible { opacity: 1; pointer-events: all; }
+#scroll-top:hover { background: var(--saffron); }
+
+/* ===== REVEAL ANIMATIONS ===== */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.revealed { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .dest-card:nth-child(1) { grid-column: span 12; }
+  .dest-card:nth-child(2) { grid-column: span 12; }
+  .dest-card:nth-child(3), .dest-card:nth-child(4), .dest-card:nth-child(5) { grid-column: span 4; }
+  .about-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  #navbar { padding: 0 1.25rem; }
+  .nav-links.mobile-open {
+    display: flex; flex-direction: column; position: absolute;
+    top: 70px; left: 0; right: 0; background: var(--navy);
+    padding: 1rem; gap: 0.25rem;
+  }
+  .nav-links.mobile-open a { padding: 0.65rem 1rem; border-radius: 8px; }
+  .dest-card:nth-child(3), .dest-card:nth-child(4), .dest-card:nth-child(5) { grid-column: span 12; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .gallery-item:nth-child(1) { grid-column: span 2; }
+  .timeline::before { left: 20px; }
+  .tl-item { grid-template-columns: 44px 1fr; }
+  .tl-item:nth-child(odd) .tl-content,
+  .tl-item:nth-child(even) .tl-content { grid-column: 2; text-align: left; padding: 0 0 0 1rem; }
+  .tl-item:nth-child(odd) .tl-mid,
+  .tl-item:nth-child(even) .tl-mid { grid-column: 1; }
+  .tl-item:nth-child(odd) .tl-empty,
+  .tl-item:nth-child(even) .tl-empty { display: none; }
+  .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+  .stats-bar { gap: 1.25rem; }
+  section { padding: 3.5rem 1.25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, .hero-slide, .dest-img { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <span class="flag">🇱🇰</span>
+    Discover Sri Lanka
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a href="#about">About</a>
+    <a href="#all-destinations">Destinations</a>
+    <a href="#culture">Culture</a>
+    <a href="#food">Food</a>
+    <a href="#wildlife">Wildlife</a>
+    <a href="#beaches">Beaches</a>
+    <a href="#mountains">Mountains</a>
+    <a href="#transport">Transport</a>
+    <a href="#economy">Economy</a>
+    <a href="#gallery">Gallery</a>
+  </div>
+  <div class="nav-controls">
+    <button class="btn-search-trigger" onclick="toggleSearch()">🔍 Search</button>
+    <button class="btn-icon" id="darkModeBtn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+    <button class="hamburger" id="hamburger" onclick="toggleMobile()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== SEARCH OVERLAY ===== -->
+<div id="search-overlay">
+  <div class="search-box">
+    <h2>Explore Sri Lanka</h2>
+    <div class="search-input-wrap">
+      <input type="text" id="searchInput" placeholder="Search destinations, food, culture…" oninput="handleSearch(this.value)">
+      <span class="search-close" onclick="toggleSearch()">✕</span>
+    </div>
+    <div class="search-tags">
+      <span class="search-tag" onclick="fillSearch('Sigiriya')">🏰 Sigiriya</span>
+      <span class="search-tag" onclick="fillSearch('Beaches')">🌊 Beaches</span>
+      <span class="search-tag" onclick="fillSearch('Kandy')">🏔️ Kandy</span>
+      <span class="search-tag" onclick="fillSearch('Tea')">🍵 Tea</span>
+      <span class="search-tag" onclick="fillSearch('Elephants')">🐘 Elephants</span>
+      <span class="search-tag" onclick="fillSearch('Galle')">🏛️ Galle</span>
+    </div>
+    <div id="search-results"></div>
+  </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-slides">
+    <div class="hero-slide active"></div>
+    <div class="hero-slide"></div>
+    <div class="hero-slide"></div>
+    <div class="hero-slide"></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">✨ The Pearl of the Indian Ocean</div>
+    <h1 class="hero-title">One Island.<br><span class="accent">Endless Wonders.</span></h1>
+    <p class="hero-tagline">From ancient kingdoms to pristine beaches, from misty mountains to wild safaris — Sri Lanka awaits.</p>
+    <div class="hero-cta-group">
+      <a href="#all-destinations" class="btn-primary">🗺️ Explore Destinations</a>
+      <a href="#about" class="btn-outline">📖 Our Story</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>SCROLL</span>
+    <span class="arrow">↓</span>
+  </div>
+  <div class="hero-dots">
+    <div class="hero-dot active" onclick="goSlide(0)"></div>
+    <div class="hero-dot" onclick="goSlide(1)"></div>
+    <div class="hero-dot" onclick="goSlide(2)"></div>
+    <div class="hero-dot" onclick="goSlide(3)"></div>
+  </div>
+</section>
+
+<!-- ===== STATS BAR ===== -->
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-num" data-count="22">0</div><div class="stat-label">Districts</div></div>
+  <div class="stat-item"><div class="stat-num" data-count="8">0</div><div class="stat-label">UNESCO Sites</div></div>
+  <div class="stat-item"><div class="stat-num" data-count="1340">0</div><div class="stat-label">Bird Species</div></div>
+  <div class="stat-item"><div class="stat-num" data-count="1585">0</div><div class="stat-label">KM of Beaches</div></div>
+  <div class="stat-item"><div class="stat-num" data-count="430">0</div><div class="stat-label">Waterfalls</div></div>
+  <div class="stat-item"><div class="stat-num" data-count="26">0</div><div class="stat-label">National Parks</div></div>
+  <div class="stat-item"><div class="stat-num" data-count="22">0</div><div class="stat-label">Million People</div></div>
+</div>
+
+<!-- ===== QUICK LINKS ===== -->
+<div id="quick-links">
+  <div class="quick-links-grid">
+    <a href="#all-destinations" class="quick-link-card"><div class="ql-icon">🗺️</div><div class="ql-label">Destinations</div></a>
+    <a href="#culture" class="quick-link-card"><div class="ql-icon">🎭</div><div class="ql-label">Culture</div></a>
+    <a href="#food" class="quick-link-card"><div class="ql-icon">🍛</div><div class="ql-label">Food</div></a>
+    <a href="#wildlife" class="quick-link-card"><div class="ql-icon">🐘</div><div class="ql-label">Wildlife</div></a>
+    <a href="#beaches" class="quick-link-card"><div class="ql-icon">🌊</div><div class="ql-label">Beaches</div></a>
+    <a href="#mountains" class="quick-link-card"><div class="ql-icon">⛰️</div><div class="ql-label">Mountains</div></a>
+    <a href="#transport" class="quick-link-card"><div class="ql-icon">🚂</div><div class="ql-label">Transport</div></a>
+    <a href="#economy" class="quick-link-card"><div class="ql-icon">🎓</div><div class="ql-label">Education</div></a>
+    <a href="#interactive" class="quick-link-card"><div class="ql-icon">🌤️</div><div class="ql-label">Weather</div></a>
+    <a href="#interactive" class="quick-link-card"><div class="ql-icon">💱</div><div class="ql-label">Currency</div></a>
+    <a href="#gallery" class="quick-link-card"><div class="ql-icon">📸</div><div class="ql-label">Gallery</div></a>
+    <a href="#history" class="quick-link-card"><div class="ql-icon">📜</div><div class="ql-label">History</div></a>
+  </div>
+</div>
+
+<!-- ===== FEATURED DESTINATIONS ===== -->
+<section id="destinations">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">Must-See Places</span>
+      <h2 class="section-title">Featured Destinations</h2>
+      <p class="section-sub">From the ancient citadel of Sigiriya to the surf-kissed shores of Arugam Bay — every corner tells a story.</p>
+    </div>
+    <div class="dest-grid">
+      <div class="dest-card reveal">
+        <img class="dest-img" src="https://images.unsplash.com/photo-1552637707-8f87c77a6aea?w=900&q=80" alt="Sigiriya">
+        <div class="dest-overlay">
+          <span class="dest-tag">UNESCO Heritage</span>
+          <div class="dest-name">Sigiriya</div>
+          <div class="dest-meta">🏰 Lion Rock Fortress · Central Province</div>
+        </div>
+      </div>
+      <div class="dest-card reveal reveal-delay-1">
+        <img class="dest-img" src="https://images.unsplash.com/photo-1588422600757-d048faa4fccd?w=700&q=80" alt="Kandy">
+        <div class="dest-overlay">
+          <span class="dest-tag">Cultural Capital</span>
+          <div class="dest-name">Kandy</div>
+          <div class="dest-meta">🌸 Temple of the Tooth · Hill Country</div>
+        </div>
+      </div>
+      <div class="dest-card reveal">
+        <img class="dest-img" src="https://images.unsplash.com/photo-1578519050142-afb511e518de?w=600&q=80" alt="Ella">
+        <div class="dest-overlay">
+          <span class="dest-tag">Tea Country</span>
+          <div class="dest-name">Ella</div>
+          <div class="dest-meta">🌿 Uva Province</div>
+        </div>
+      </div>
+      <div class="dest-card reveal reveal-delay-1">
+        <img class="dest-img" src="https://images.unsplash.com/photo-1553603227-2358aabe821e?w=600&q=80" alt="Galle">
+        <div class="dest-overlay">
+          <span class="dest-tag">Colonial Fort</span>
+          <div class="dest-name">Galle</div>
+          <div class="dest-meta">🏛️ Southern Province</div>
+        </div>
+      </div>
+      <div class="dest-card reveal reveal-delay-2">
+        <img class="dest-img" src="https://images.unsplash.com/photo-1580181588169-9c0f00b0a9ea?w=600&q=80" alt="Yala">
+        <div class="dest-overlay">
+          <span class="dest-tag">National Park</span>
+          <div class="dest-name">Yala</div>
+          <div class="dest-meta">🐆 Leopard Capital</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="about-image reveal">
+        <img src="https://images.unsplash.com/photo-1604999565976-8913ad2ddb7c?w=700&q=80" alt="Sri Lanka landscape">
+        <div class="about-badge">
+          <span class="num">2500+</span>
+          <span class="lbl">Years of History</span>
+        </div>
+      </div>
+      <div class="about-content reveal reveal-delay-1">
+        <span class="section-eyebrow">About Sri Lanka</span>
+        <h2 class="section-title">The Resplendent Isle</h2>
+        <p>Sri Lanka — formerly Ceylon — is a teardrop-shaped island nation nestled in the Indian Ocean, just off the southern tip of India. With a landmass of 65,610 km², it packs extraordinary diversity into a compact space.</p>
+        <p>Home to eight UNESCO World Heritage Sites, 26 national parks, ancient Buddhist monuments, colonial-era forts, lush tea plantations, and over 1,500 km of coastline, Sri Lanka is one of the world's most biodiverse and culturally rich destinations.</p>
+        <p>Two major ethnic groups — Sinhalese and Tamil — along with Moors, Burghers, and other communities, have shaped a vibrant multicultural nation with three official languages: Sinhala, Tamil, and English.</p>
+        <div class="about-facts">
+          <div class="fact-card"><div class="fc-label">Capital</div><div class="fc-value">Sri Jayawardenepura Kotte</div></div>
+          <div class="fact-card"><div class="fc-label">Largest City</div><div class="fc-value">Colombo</div></div>
+          <div class="fact-card"><div class="fc-label">Languages</div><div class="fc-value">Sinhala, Tamil, English</div></div>
+          <div class="fact-card"><div class="fc-label">Currency</div><div class="fc-value">Sri Lankan Rupee (LKR)</div></div>
+          <div class="fact-card"><div class="fc-label">Area</div><div class="fc-value">65,610 km²</div></div>
+          <div class="fact-card"><div class="fc-label">Religions</div><div class="fc-value">Buddhist, Hindu, Muslim, Christian</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- National Symbols -->
+    <div style="margin-top: 4rem;">
+      <h3 class="section-title reveal" style="font-size: 1.8rem; margin-bottom: 0.5rem;">National Symbols</h3>
+      <div class="symbols-grid">
+        <div class="symbol-card reveal"><div class="s-icon">🦁</div><div class="s-type">National Animal</div><div class="s-name">Sri Lankan Leopard</div></div>
+        <div class="symbol-card reveal reveal-delay-1"><div class="s-icon">🐦</div><div class="s-type">National Bird</div><div class="s-name">Sri Lanka Junglefowl</div></div>
+        <div class="symbol-card reveal reveal-delay-2"><div class="s-icon">💐</div><div class="s-type">National Flower</div><div class="s-name">Blue Lotus</div></div>
+        <div class="symbol-card reveal"><div class="s-icon">🌳</div><div class="s-type">National Tree</div><div class="s-name">Iron Wood (Na)</div></div>
+        <div class="symbol-card reveal reveal-delay-1"><div class="s-icon">🦋</div><div class="s-type">National Butterfly</div><div class="s-name">Sri Lankan Birdwing</div></div>
+        <div class="symbol-card reveal reveal-delay-2"><div class="s-icon">🏏</div><div class="s-type">National Sport</div><div class="s-name">Cricket (& Volleyball)</div></div>
+        <div class="symbol-card reveal"><div class="s-icon">🍚</div><div class="s-type">National Dish</div><div class="s-name">Rice and Curry</div></div>
+        <div class="symbol-card reveal reveal-delay-1"><div class="s-icon">🎗️</div><div class="s-type">National Gem</div><div class="s-name">Blue Sapphire</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HISTORY TIMELINE ===== -->
+<section id="history">
+  <div class="section-inner">
+    <div class="section-header" style="text-align:center;">
+      <span class="section-eyebrow" style="color:var(--amber);">Through the Ages</span>
+      <h2 class="section-title reveal">2,500 Years of Civilization</h2>
+      <p class="section-sub reveal" style="margin: 0 auto 3rem; color: rgba(255,255,255,0.6);">From the legendary arrival of Prince Vijaya to modern independence, Sri Lanka's history is as rich as its landscape.</p>
+    </div>
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="tl-content"><div class="tl-year">543 BC</div><div class="tl-event">Founding of the Kingdom</div><div class="tl-desc">Prince Vijaya arrives from India, founding the first Sinhalese kingdom.</div></div>
+        <div class="tl-mid"><div class="tl-dot"></div></div>
+        <div class="tl-empty"></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-empty"></div>
+        <div class="tl-mid"><div class="tl-dot"></div></div>
+        <div class="tl-content"><div class="tl-year">247 BC</div><div class="tl-event">Buddhism Arrives</div><div class="tl-desc">Mahinda, son of Emperor Ashoka, brings Buddhism to Sri Lanka during the reign of King Devanampiyatissa.</div></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-content"><div class="tl-year">161 BC</div><div class="tl-event">King Dutugamunu Unifies the Island</div><div class="tl-desc">King Dutugamunu defeats Elara and unifies the island under one kingdom, building the Ruwanwelisaya stupa.</div></div>
+        <div class="tl-mid"><div class="tl-dot"></div></div>
+        <div class="tl-empty"></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-empty"></div>
+        <div class="tl-mid"><div class="tl-dot"></div></div>
+        <div class="tl-content"><div class="tl-year">1017 AD</div><div class="tl-event">Chola Invasion</div><div class="tl-desc">South Indian Chola dynasty conquers the island; Polonnaruwa becomes the new capital.</div></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-content"><div class="tl-year">1505</div><div class="tl-event">Portuguese Arrival</div><div class="tl-desc">Portuguese sailors establish the first European presence, beginning the colonial era in coastal Sri Lanka.</div></div>
+        <div class="tl-mid"><div class="tl-dot"></div></div>
+        <div class="tl-empty"></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-empty"></div>
+        <div class="tl-mid"><div class="tl-dot"></div></div>
+        <div class="tl-content"><div class="tl-year">1658</div><div class="tl-event">Dutch Take Control</div><div class="tl-desc">The Dutch East India Company ousts the Portuguese and controls coastal areas and the cinnamon trade.</div></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-content"><div class="tl-year">1815</div><div class="tl-event">British Crown Colony</div><div class="tl-desc">The British conquer the Kandyan Kingdom — the last independent kingdom — and Ceylon becomes a British Crown Colony.</div></div>
+        <div class="tl-mid"><div class="tl-dot"></div></div>
+        <div class="tl-empty"></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-empty"></div>
+        <div class="tl-mid"><div class="tl-dot"></div></div>
+        <div class="tl-content"><div class="tl-year">1948</div><div class="tl-event">Independence</div><div class="tl-desc">Ceylon gains independence from Britain on February 4th, 1948 — now celebrated as National Independence Day.</div></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-content"><div class="tl-year">1972</div><div class="tl-event">Republic of Sri Lanka</div><div class="tl-desc">Ceylon is renamed the Republic of Sri Lanka, becoming a republic with a new constitution.</div></div>
+        <div class="tl-mid"><div class="tl-dot"></div></div>
+        <div class="tl-empty"></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-empty"></div>
+        <div class="tl-mid"><div class="tl-dot"></div></div>
+        <div class="tl-content"><div class="tl-year">2009</div><div class="tl-event">End of Civil War</div><div class="tl-desc">After 26 years, the civil conflict ends. Sri Lanka begins a new chapter of peace and reconstruction.</div></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-content"><div class="tl-year">Present</div><div class="tl-event">Modern Renaissance</div><div class="tl-desc">Sri Lanka emerges as a top travel destination, with growing tech, tourism, and cultural industries.</div></div>
+        <div class="tl-mid"><div class="tl-dot"></div></div>
+        <div class="tl-empty"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ALL DESTINATIONS ===== -->
+<section id="all-destinations">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">Explore the Island</span>
+      <h2 class="section-title">All Destinations</h2>
+      <p class="section-sub">Thirteen unmissable places, each with its own soul.</p>
+    </div>
+    <div class="dest-detail-grid">
+      <div class="dest-detail-card reveal">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1742277295191-9e0349f77ea2?w=600&q=80" alt="Colombo">
+        <div class="ddc-body">
+          <div class="ddc-tag">🏙️ Commercial Capital</div>
+          <h3 class="ddc-name">Colombo</h3>
+          <p class="ddc-desc">A bustling cosmopolitan metropolis blending colonial architecture, modern skyscrapers, vibrant markets, and a thriving food scene along the Indian Ocean coastline.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🏛️</span> Galle Face Green</span>
+            <span class="ddc-meta-item"><span class="mi">🛍️</span> Pettah Market</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: December – April</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal reveal-delay-1">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1588422600757-d048faa4fccd?w=600&q=80" alt="Kandy">
+        <div class="ddc-body">
+          <div class="ddc-tag">🏔️ Cultural Capital</div>
+          <h3 class="ddc-name">Kandy</h3>
+          <p class="ddc-desc">Nestled in the hills, Kandy is home to the sacred Temple of the Tooth Relic, the last royal palace, beautiful botanical gardens, and the magnificent Esala Perahera procession.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🏯</span> Temple of Tooth</span>
+            <span class="ddc-meta-item"><span class="mi">🌺</span> Peradeniya Gardens</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: January – April</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal reveal-delay-2">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1553603227-2358aabe821e?w=600&q=80" alt="Galle">
+        <div class="ddc-body">
+          <div class="ddc-tag">🏛️ Colonial Fort</div>
+          <h3 class="ddc-name">Galle</h3>
+          <p class="ddc-desc">A UNESCO-listed 17th-century Dutch fortified city with cobblestone streets, boutique cafes, art galleries, and a lighthouse overlooking the turquoise southern sea.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🏰</span> Galle Fort</span>
+            <span class="ddc-meta-item"><span class="mi">🌊</span> Jungle Beach</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: November – April</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Nuwara Eliya">
+        <div class="ddc-body">
+          <div class="ddc-tag">🌿 Hill Country</div>
+          <h3 class="ddc-name">Nuwara Eliya</h3>
+          <p class="ddc-desc">Called "Little England," this misty highland town at 1,868m is surrounded by rolling tea estates, strawberry farms, colonial bungalows, and cool mountain air.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🍵</span> Tea Plantations</span>
+            <span class="ddc-meta-item"><span class="mi">🌸</span> Gregory Lake</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: January – March</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal reveal-delay-1">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1578519050142-afb511e518de?w=600&q=80" alt="Ella">
+        <div class="ddc-body">
+          <div class="ddc-tag">🏞️ Backpacker Haven</div>
+          <h3 class="ddc-name">Ella</h3>
+          <p class="ddc-desc">A charming mountain village famous for Nine Arch Bridge, Ella Rock hikes, train rides through tea country, and panoramic views over the emerald valley.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🌉</span> Nine Arch Bridge</span>
+            <span class="ddc-meta-item"><span class="mi">⛰️</span> Ella Rock</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: January – April</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal reveal-delay-2">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1552637707-8f87c77a6aea?w=600&q=80" alt="Sigiriya">
+        <div class="ddc-body">
+          <div class="ddc-tag">🏰 UNESCO Heritage</div>
+          <h3 class="ddc-name">Sigiriya</h3>
+          <p class="ddc-desc">The magnificent 5th-century rock fortress rises 200m above the jungle. Climb past ancient frescoes and mirror walls to a palace complex with breathtaking views.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🗿</span> Lion Rock</span>
+            <span class="ddc-meta-item"><span class="mi">🎨</span> Ancient Frescoes</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: April – September</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1545579133-99bb5ab189bd?w=600&q=80" alt="Anuradhapura">
+        <div class="ddc-body">
+          <div class="ddc-tag">🏛️ Ancient Capital</div>
+          <h3 class="ddc-name">Anuradhapura</h3>
+          <p class="ddc-desc">One of the ancient world's great cities and a UNESCO site — vast stupas, sacred bo trees, monasteries, and royal ruins spread across a living pilgrimage city.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🕌</span> Ruwanwelisaya</span>
+            <span class="ddc-meta-item"><span class="mi">🌳</span> Sacred Bo Tree</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: April – October</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal reveal-delay-1">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1596786232430-bf5ece060276?w=600&q=80" alt="Jaffna">
+        <div class="ddc-body">
+          <div class="ddc-tag">🌺 Northern Gem</div>
+          <h3 class="ddc-name">Jaffna</h3>
+          <p class="ddc-desc">The cultural heartland of Sri Lanka's Tamil community, with majestic Hindu kovils, the Dutch fort, Nainativu Island temples, and uniquely spiced northern cuisine.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🏯</span> Jaffna Fort</span>
+            <span class="ddc-meta-item"><span class="mi">🙏</span> Nainativu</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: May – September</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal reveal-delay-2">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80" alt="Trincomalee">
+        <div class="ddc-body">
+          <div class="ddc-tag">🐋 East Coast</div>
+          <h3 class="ddc-name">Trincomalee</h3>
+          <p class="ddc-desc">One of the world's finest natural harbors, with stunning Nilaveli and Uppuveli beaches, hot springs, whale watching, and the ancient Koneswaram Kovil perched on a cliff.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🏖️</span> Nilaveli Beach</span>
+            <span class="ddc-meta-item"><span class="mi">🐳</span> Whale Watching</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: May – October</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80" alt="Arugam Bay">
+        <div class="ddc-body">
+          <div class="ddc-tag">🏄 Surf Capital</div>
+          <h3 class="ddc-name">Arugam Bay</h3>
+          <p class="ddc-desc">One of Asia's top surf spots, this chilled-out fishing village on the east coast draws surfers, yogis, and beach lovers with consistent waves and a laid-back vibe.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🌊</span> Main Point Surf</span>
+            <span class="ddc-meta-item"><span class="mi">🐊</span> Kumana NP</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: May – October</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal reveal-delay-1">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1580181588169-9c0f00b0a9ea?w=600&q=80" alt="Yala">
+        <div class="ddc-body">
+          <div class="ddc-tag">🐆 Safari Paradise</div>
+          <h3 class="ddc-name">Yala National Park</h3>
+          <p class="ddc-desc">The world's highest density of leopards per km². Join a jeep safari through diverse ecosystems of jungle, lagoons, and beach to spot leopards, elephants, crocs, and hundreds of bird species.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🐆</span> Leopard Safaris</span>
+            <span class="ddc-meta-item"><span class="mi">🐘</span> Wild Elephants</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: October – April</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal reveal-delay-2">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1646070301167-d497ab1f362e?w=600&q=80" alt="Horton Plains">
+        <div class="ddc-body">
+          <div class="ddc-tag">🌫️ Plateau & Cliffs</div>
+          <h3 class="ddc-name">Horton Plains</h3>
+          <p class="ddc-desc">Sri Lanka's highest plateau, home to World's End — a sheer 870m cliff with breathtaking views. Trek through misty cloud forest and moorland to Baker's Falls.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🌅</span> World's End</span>
+            <span class="ddc-meta-item"><span class="mi">🦌</span> Sambar Deer</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: January – March</div>
+        </div>
+      </div>
+      <div class="dest-detail-card reveal">
+        <img class="ddc-img" src="https://images.unsplash.com/photo-1550614795-00d4f7e5fed2?w=600&q=80" alt="Polonnaruwa">
+        <div class="ddc-body">
+          <div class="ddc-tag">🏛️ Medieval Kingdom</div>
+          <h3 class="ddc-name">Polonnaruwa</h3>
+          <p class="ddc-desc">The second ancient kingdom capital with a spectacular collection of medieval ruins — the Gal Vihara colossal Buddha statues, royal palace, bathing pools, and intricate stone carvings.</p>
+          <div class="ddc-meta">
+            <span class="ddc-meta-item"><span class="mi">🗿</span> Gal Vihara</span>
+            <span class="ddc-meta-item"><span class="mi">🏛️</span> Royal Palace</span>
+          </div>
+          <div class="ddc-best-time">🗓️ Best time: April – September</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CULTURE ===== -->
+<section id="culture">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">Living Traditions</span>
+      <h2 class="section-title">Culture & Heritage</h2>
+      <p class="section-sub">Two thousand years of art, faith, dance, and festivity woven into everyday Sri Lankan life.</p>
+    </div>
+    <div class="culture-grid">
+      <div class="culture-card reveal">
+        <img class="culture-card-img" src="https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=600&q=80" alt="Kandyan Dancing">
+        <div class="culture-card-body">
+          <h3>Kandyan Dancing</h3>
+          <p>One of Sri Lanka's most treasured art forms, Kandyan dance is an elaborate performance of colorful costumes, rhythmic drumming, and acrobatic movements — traditionally performed at temples and royal courts. The dancers' elaborate headdresses and costumes are iconic symbols of Kandyan culture.</p>
+        </div>
+      </div>
+      <div class="culture-card reveal reveal-delay-1">
+        <img class="culture-card-img" src="https://images.unsplash.com/photo-1604999565976-8913ad2ddb7c?w=600&q=80" alt="Buddhist Culture">
+        <div class="culture-card-body">
+          <h3>Buddhist Heritage</h3>
+          <p>Buddhism has shaped Sri Lankan civilization for over 2,300 years. From the massive dagobas of Anuradhapura to the serene rock temples of Dambulla, Buddhist art and architecture define the island's spiritual landscape. Poya (full moon) days are national holidays honoring the lunar calendar.</p>
+        </div>
+      </div>
+      <div class="culture-card reveal reveal-delay-2">
+        <img class="culture-card-img" src="https://images.unsplash.com/photo-1596786232430-bf5ece060276?w=600&q=80" alt="Tamil Culture">
+        <div class="culture-card-body">
+          <h3>Tamil Heritage</h3>
+          <p>Sri Lankan Tamil culture is vibrant and ancient, expressed through classical Bharatanatyam dance, Carnatic music, intricate kolam floor patterns, magnificent Hindu kovils, and the rich literary tradition in the Tamil language — one of the world's oldest classical languages.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Festivals -->
+    <div style="margin-top: 3.5rem;">
+      <h3 class="section-title reveal" style="font-size: 1.8rem;">Festivals & Celebrations</h3>
+      <div class="festival-list">
+        <div class="festival-card reveal"><div class="fest-icon">🎊</div><h4>Sinhala & Tamil New Year</h4><p>Avurudu — celebrated on April 13/14, marking the traditional new year with rituals, games, sweets, and family gatherings.</p></div>
+        <div class="festival-card reveal reveal-delay-1"><div class="fest-icon">🪔</div><h4>Deepavali</h4><p>The Hindu festival of lights — celebrated by Tamil communities with oil lamps, fireworks, and sweets in October/November.</p></div>
+        <div class="festival-card reveal reveal-delay-2"><div class="fest-icon">🌕</div><h4>Vesak</h4><p>The most sacred Buddhist festival celebrating the birth, enlightenment, and passing of the Buddha — streets lit with lanterns in May.</p></div>
+        <div class="festival-card reveal"><div class="fest-icon">🌾</div><h4>Thai Pongal</h4><p>Tamil harvest festival in January, giving thanks to the sun, cattle, and nature with the cooking of the sacred pongal rice.</p></div>
+        <div class="festival-card reveal reveal-delay-1"><div class="fest-icon">🐘</div><h4>Esala Perahera</h4><p>Kandy's grand procession — ten days of illuminated elephants, fire dancers, and drummers parading through the city in July/August.</p></div>
+        <div class="festival-card reveal reveal-delay-2"><div class="fest-icon">☪️</div><h4>Eid Al-Fitr</h4><p>Celebrated by Sri Lankan Muslims marking the end of Ramadan with prayers, feasting, and giving to the poor.</p></div>
+      </div>
+    </div>
+
+    <!-- UNESCO Sites -->
+    <div style="margin-top: 3.5rem;">
+      <h3 class="section-title reveal" style="font-size: 1.8rem;">UNESCO World Heritage Sites</h3>
+      <div class="unesco-grid">
+        <div class="unesco-card reveal"><img src="https://images.unsplash.com/photo-1552637707-8f87c77a6aea?w=500&q=80" alt="Sigiriya"><div class="unesco-card-body"><div class="unesco-year">UNESCO 1982</div><h3>Sigiriya Rock Fortress</h3><p>Ancient palace and fortress complex, 5th century AD</p></div></div>
+        <div class="unesco-card reveal reveal-delay-1"><img src="https://images.unsplash.com/photo-1545579133-99bb5ab189bd?w=500&q=80" alt="Anuradhapura"><div class="unesco-card-body"><div class="unesco-year">UNESCO 1982</div><h3>Sacred City of Anuradhapura</h3><p>Ancient Buddhist monastic civilization spanning 1,300 years</p></div></div>
+        <div class="unesco-card reveal reveal-delay-2"><img src="https://images.unsplash.com/photo-1553603227-2358aabe821e?w=500&q=80" alt="Galle Fort"><div class="unesco-card-body"><div class="unesco-year">UNESCO 1988</div><h3>Old Town of Galle</h3><p>Best-preserved sea fort in South and Southeast Asia</p></div></div>
+        <div class="unesco-card reveal"><img src="https://images.unsplash.com/photo-1588422600757-d048faa4fccd?w=500&q=80" alt="Kandy"><div class="unesco-card-body"><div class="unesco-year">UNESCO 1988</div><h3>Sacred City of Kandy</h3><p>Home of the Temple of the Tooth Relic of the Buddha</p></div></div>
+        <div class="unesco-card reveal reveal-delay-1"><img src="https://images.unsplash.com/photo-1539021929149-88832c42bc15?w=500&q=80" alt="Central Highlands"><div class="unesco-card-body"><div class="unesco-year">UNESCO 2010</div><h3>Central Highlands</h3><p>Horton Plains, Knuckles & Peak Wilderness — key biodiversity zone</p></div></div>
+        <div class="unesco-card reveal reveal-delay-2"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80" alt="Dambulla"><div class="unesco-card-body"><div class="unesco-year">UNESCO 1991</div><h3>Golden Temple of Dambulla</h3><p>Sri Lanka's best-preserved cave temple complex with 153 Buddha statues</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOD ===== -->
+<section id="food">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">A Feast for the Senses</span>
+      <h2 class="section-title">Sri Lankan Cuisine</h2>
+      <p class="section-sub">Bold spices, tropical flavors, and centuries of culinary tradition — Sri Lankan food is a true adventure.</p>
+    </div>
+    <div class="food-grid">
+      <div class="food-card reveal">
+        <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&q=80" alt="Rice and Curry">
+        <div class="food-body">
+          <h3>Rice and Curry</h3>
+          <p>The national dish — steamed rice served with a spread of curries, sambol, papadums, and pickles. Every household has its own version, using local spices like goraka, pandan, and curry leaves.</p>
+          <div class="food-region">🇱🇰 Island-wide staple</div>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-1">
+        <img src="https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=500&q=80" alt="Hoppers">
+        <div class="food-body">
+          <h3>Hoppers (Appa)</h3>
+          <p>Bowl-shaped pancakes made from fermented rice flour and coconut milk, served plain, with egg, or sweet. A beloved breakfast staple across the island, typically paired with pol sambol.</p>
+          <div class="food-region">🌿 All regions</div>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-2">
+        <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=500&q=80" alt="Kottu">
+        <div class="food-body">
+          <h3>Kottu Roti</h3>
+          <p>Sri Lanka's beloved street food — shredded flatbread stir-fried with vegetables, egg, and meat on a sizzling griddle. The metallic clanging of the blades chopping the roti is the sound of Sri Lankan street life.</p>
+          <div class="food-region">🌆 Urban street food</div>
+        </div>
+      </div>
+      <div class="food-card reveal">
+        <img src="https://images.unsplash.com/photo-1547592180-85f173990554?w=500&q=80" alt="String Hoppers">
+        <div class="food-body">
+          <h3>String Hoppers</h3>
+          <p>Delicate steamed noodle patties made from rice flour pressed through a mould into fine strands. Served with coconut milk, dhal curry, and seeni sambol — a light, satisfying breakfast or dinner.</p>
+          <div class="food-region">🏠 Home comfort food</div>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-1">
+        <img src="https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=500&q=80" alt="Lamprais">
+        <div class="food-body">
+          <h3>Lamprais</h3>
+          <p>A Dutch-Burgher legacy — rice cooked in stock with Dutch-style curries, a meatball, and sambol, all wrapped in a banana leaf and baked. A Sunday feast tradition in Sri Lanka's Burgher community.</p>
+          <div class="food-region">🇳🇱 Burgher heritage</div>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-2">
+        <img src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=80" alt="Seafood">
+        <div class="food-body">
+          <h3>Seafood</h3>
+          <p>Surrounded by the Indian Ocean, Sri Lanka offers spectacular seafood — devilled prawns, black pepper crab, ambul thiyal (sour fish curry), and fresh tuna, often cooked with tangy goraka and coconut milk.</p>
+          <div class="food-region">🌊 Coastal specialty</div>
+        </div>
+      </div>
+      <div class="food-card reveal">
+        <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&q=80" alt="Pol Roti">
+        <div class="food-body">
+          <h3>Pol Roti</h3>
+          <p>Thick, unleavened flatbread made with freshly grated coconut and wheat flour, cooked on a griddle. Served with lunu miris (onion chili sambol) and dhal — a staple breakfast in coastal areas.</p>
+          <div class="food-region">🥥 Coastal favorite</div>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-1">
+        <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500&q=80" alt="Desserts">
+        <div class="food-body">
+          <h3>Sweets & Desserts</h3>
+          <p>Kiri bath (milk rice), watalappan (Malay coconut custard), kavum (oil cakes), kokis (crispy Dutch cookies), and buffalo curd with kithul treacle — Sri Lanka's desserts are a sweet celebration of its diverse heritage.</p>
+          <div class="food-region">🍮 Festive tradition</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WILDLIFE ===== -->
+<section id="wildlife">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">Wild Sri Lanka</span>
+      <h2 class="section-title">Wildlife & Nature</h2>
+      <p class="section-sub">One of the world's biodiversity hotspots — 26 national parks protecting extraordinary wildlife and ancient forests.</p>
+    </div>
+    <div class="wildlife-grid">
+      <div class="wildlife-card reveal">
+        <img src="https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=500&q=80" alt="Elephant">
+        <div class="wildlife-card-body">
+          <h3>🐘 Sri Lankan Elephant</h3>
+          <p>The largest land animal in Asia, with over 7,000 wild elephants — one of the highest densities in Asia. The Elephant Gathering at Minneriya is one of the greatest wildlife spectacles on Earth.</p>
+          <span class="conservation-badge vulnerable">⚠️ Vulnerable</span>
+        </div>
+      </div>
+      <div class="wildlife-card reveal reveal-delay-1">
+        <img src="https://images.unsplash.com/photo-1627401099591-4772d63b86a4?w=500&q=80" alt="Leopard">
+        <div class="wildlife-card-body">
+          <h3>🐆 Sri Lankan Leopard</h3>
+          <p>Found nowhere else — the Sri Lankan leopard is the apex predator of the island's forests. Yala National Park holds the world's highest density of wild leopards, making sightings relatively common.</p>
+          <span class="conservation-badge endangered">🔴 Endangered</span>
+        </div>
+      </div>
+      <div class="wildlife-card reveal reveal-delay-2">
+        <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=80" alt="Blue Whale">
+        <div class="wildlife-card-body">
+          <h3>🐋 Blue Whales & Dolphins</h3>
+          <p>Off the southern coast near Mirissa and Trincomalee, blue whales — the largest animals on Earth — can be spotted year-round. Spinner dolphin pods of hundreds are a common sight near the coast.</p>
+          <span class="conservation-badge endangered">🔴 Endangered</span>
+        </div>
+      </div>
+      <div class="wildlife-card reveal">
+        <img src="https://images.unsplash.com/photo-1444464666168-49d633b86797?w=500&q=80" alt="Birds">
+        <div class="wildlife-card-body">
+          <h3>🦜 Bird Watching</h3>
+          <p>Over 1,340 species including 27 endemic birds such as the Sri Lanka junglefowl, Sri Lanka blue magpie, and Sri Lanka drongo. Sinharaja Forest Reserve is a world-class birding destination.</p>
+          <span class="conservation-badge protected">✅ Protected</span>
+        </div>
+      </div>
+      <div class="wildlife-card reveal reveal-delay-1">
+        <img src="https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=500&q=80" alt="Sea Turtle">
+        <div class="wildlife-card-body">
+          <h3>🐢 Sea Turtles</h3>
+          <p>Five of the world's seven sea turtle species nest on Sri Lanka's beaches. Kosgoda and Rekawa are famous for turtle watching at night as leatherback, hawksbill, and green turtles lay their eggs.</p>
+          <span class="conservation-badge endangered">🔴 Protected</span>
+        </div>
+      </div>
+      <div class="wildlife-card reveal reveal-delay-2">
+        <img src="https://images.unsplash.com/photo-1597302018020-8a1b9bce0b00?w=500&q=80" alt="Rainforest">
+        <div class="wildlife-card-body">
+          <h3>🌿 Sinharaja Rainforest</h3>
+          <p>Sri Lanka's last viable remnant of primary tropical rainforest — a UNESCO World Heritage site with over 95% endemic trees, rare amphibians, and extraordinary biodiversity in just 89 km².</p>
+          <span class="conservation-badge protected">✅ UNESCO Protected</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BEACHES ===== -->
+<section id="beaches">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">1,585 km of Coastline</span>
+      <h2 class="section-title">Sri Lanka's Beaches</h2>
+      <p class="section-sub">From surfing to snorkeling, from lively to secluded — there's a perfect beach for everyone.</p>
+    </div>
+    <div class="beaches-tabs">
+      <button class="beach-tab active" onclick="filterBeaches('all', this)">All Coasts</button>
+      <button class="beach-tab" onclick="filterBeaches('south', this)">🌴 South Coast</button>
+      <button class="beach-tab" onclick="filterBeaches('east', this)">🏄 East Coast</button>
+      <button class="beach-tab" onclick="filterBeaches('west', this)">🌅 West Coast</button>
+    </div>
+    <div class="beaches-grid" id="beachGrid">
+      <div class="beach-card reveal" data-coast="south">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80" alt="Unawatuna">
+        <div class="beach-info">
+          <div class="beach-name">Unawatuna</div>
+          <div class="beach-coast">South Coast • Galle</div>
+          <div class="beach-icons"><span class="beach-icon">🤿</span><span class="beach-icon">🏊</span><span class="beach-icon">🍹</span></div>
+        </div>
+      </div>
+      <div class="beach-card reveal reveal-delay-1" data-coast="east">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80" alt="Arugam Bay">
+        <div class="beach-info">
+          <div class="beach-name">Arugam Bay</div>
+          <div class="beach-coast">East Coast • Ampara</div>
+          <div class="beach-icons"><span class="beach-icon">🏄</span><span class="beach-icon">🌊</span><span class="beach-icon">🎣</span></div>
+        </div>
+      </div>
+      <div class="beach-card reveal reveal-delay-2" data-coast="west">
+        <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=600&q=80" alt="Negombo">
+        <div class="beach-info">
+          <div class="beach-name">Negombo</div>
+          <div class="beach-coast">West Coast • Western</div>
+          <div class="beach-icons"><span class="beach-icon">🐟</span><span class="beach-icon">🌅</span><span class="beach-icon">⛵</span></div>
+        </div>
+      </div>
+      <div class="beach-card reveal" data-coast="east">
+        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80" alt="Nilaveli">
+        <div class="beach-info">
+          <div class="beach-name">Nilaveli</div>
+          <div class="beach-coast">East Coast • Trincomalee</div>
+          <div class="beach-icons"><span class="beach-icon">🤿</span><span class="beach-icon">🐋</span><span class="beach-icon">🏖️</span></div>
+        </div>
+      </div>
+      <div class="beach-card reveal reveal-delay-1" data-coast="south">
+        <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&q=80" alt="Mirissa">
+        <div class="beach-info">
+          <div class="beach-name">Mirissa</div>
+          <div class="beach-coast">South Coast • Matara</div>
+          <div class="beach-icons"><span class="beach-icon">🐋</span><span class="beach-icon">🏄</span><span class="beach-icon">🌴</span></div>
+        </div>
+      </div>
+      <div class="beach-card reveal reveal-delay-2" data-coast="south">
+        <img src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=600&q=80" alt="Hikkaduwa">
+        <div class="beach-info">
+          <div class="beach-name">Hikkaduwa</div>
+          <div class="beach-coast">South Coast • Galle</div>
+          <div class="beach-icons"><span class="beach-icon">🤿</span><span class="beach-icon">🐠</span><span class="beach-icon">🎵</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MOUNTAINS ===== -->
+<section id="mountains">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">High Country</span>
+      <h2 class="section-title">Mountains & Hiking</h2>
+      <p class="section-sub">From sacred pilgrimages to misty cloud forest trails — Sri Lanka's highlands offer unforgettable adventures.</p>
+    </div>
+    <div class="mountain-grid">
+      <div class="mountain-card reveal">
+        <img src="https://images.unsplash.com/photo-1539021929149-88832c42bc15?w=600&q=80" alt="Adam's Peak">
+        <div class="mountain-body">
+          <h3>Adam's Peak (Sri Pada)</h3>
+          <div class="mountain-stats">
+            <div class="mstat"><div class="mv">2,243m</div><div class="ml">Elevation</div></div>
+            <div class="mstat"><div class="mv">7 km</div><div class="ml">Distance</div></div>
+            <div class="mstat"><div class="mv">5 hrs</div><div class="ml">Duration</div></div>
+          </div>
+          <p style="font-size:0.82rem; color:rgba(255,255,255,0.7); margin-bottom:0.5rem;">Sacred to four religions — the sacred footprint atop this conical peak draws pilgrims from December to May. Legendary sunrise views over the island.</p>
+          <span class="difficulty hard">⛰️ Challenging</span>
+        </div>
+      </div>
+      <div class="mountain-card reveal reveal-delay-1">
+        <img src="https://images.unsplash.com/photo-1646070301167-d497ab1f362e?w=600&q=80" alt="Ella Rock">
+        <div class="mountain-body">
+          <h3>Ella Rock</h3>
+          <div class="mountain-stats">
+            <div class="mstat"><div class="mv">1,041m</div><div class="ml">Elevation</div></div>
+            <div class="mstat"><div class="mv">8 km</div><div class="ml">Distance</div></div>
+            <div class="mstat"><div class="mv">4 hrs</div><div class="ml">Duration</div></div>
+          </div>
+          <p style="font-size:0.82rem; color:rgba(255,255,255,0.7); margin-bottom:0.5rem;">A rewarding hike through tea estates and jungle, ending with panoramic views over the Ella Gap and surrounding valleys. One of Sri Lanka's most popular treks.</p>
+          <span class="difficulty moderate">🥾 Moderate</span>
+        </div>
+      </div>
+      <div class="mountain-card reveal reveal-delay-2">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Little Adam's Peak">
+        <div class="mountain-body">
+          <h3>Little Adam's Peak</h3>
+          <div class="mountain-stats">
+            <div class="mstat"><div class="mv">1,141m</div><div class="ml">Elevation</div></div>
+            <div class="mstat"><div class="mv">4 km</div><div class="ml">Distance</div></div>
+            <div class="mstat"><div class="mv">2 hrs</div><div class="ml">Duration</div></div>
+          </div>
+          <p style="font-size:0.82rem; color:rgba(255,255,255,0.7); margin-bottom:0.5rem;">An accessible and rewarding hike near Ella with 360° views over tea plantations, the Nine Arch Bridge, and Ella Rock. Perfect for sunrise.</p>
+          <span class="difficulty easy">🌿 Easy</span>
+        </div>
+      </div>
+      <div class="mountain-card reveal">
+        <img src="https://images.unsplash.com/photo-1646070301167-d497ab1f362e?w=600&q=80" alt="Knuckles">
+        <div class="mountain-body">
+          <h3>Knuckles Mountain Range</h3>
+          <div class="mountain-stats">
+            <div class="mstat"><div class="mv">1,906m</div><div class="ml">Elevation</div></div>
+            <div class="mstat"><div class="mv">20 km</div><div class="ml">Range</div></div>
+            <div class="mstat"><div class="mv">2+ days</div><div class="ml">Duration</div></div>
+          </div>
+          <p style="font-size:0.82rem; color:rgba(255,255,255,0.7); margin-bottom:0.5rem;">A UNESCO-protected wilderness of jagged peaks, cloud forests, waterfalls, and remote villages. Multi-day treks through misty highland terrain that feels truly wild.</p>
+          <span class="difficulty hard">⛰️ Challenging</span>
+        </div>
+      </div>
+      <div class="mountain-card reveal reveal-delay-1">
+        <img src="https://images.unsplash.com/photo-1646070301167-d497ab1f362e?w=600&q=80" alt="Horton Plains">
+        <div class="mountain-body">
+          <h3>Horton Plains Circuit</h3>
+          <div class="mountain-stats">
+            <div class="mstat"><div class="mv">2,100m</div><div class="ml">Elevation</div></div>
+            <div class="mstat"><div class="mv">9 km</div><div class="ml">Distance</div></div>
+            <div class="mstat"><div class="mv">3 hrs</div><div class="ml">Duration</div></div>
+          </div>
+          <p style="font-size:0.82rem; color:rgba(255,255,255,0.7); margin-bottom:0.5rem;">Sri Lanka's highest plateau walk passes World's End (870m cliff), Baker's Falls, and cloud forest inhabited by sambar deer, purple-faced langurs, and endemic birds.</p>
+          <span class="difficulty easy">🌿 Easy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRANSPORT ===== -->
+<section id="transport">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">Getting Around</span>
+      <h2 class="section-title">Transport Guide</h2>
+      <p class="section-sub">Sri Lanka is compact and well-connected — here's how to explore it like a local.</p>
+    </div>
+    <div class="transport-grid">
+      <div class="transport-card reveal">
+        <div class="tc-icon">🚂</div>
+        <h3>Scenic Trains</h3>
+        <p>Sri Lanka's railways are legendary. The Kandy–Ella route through tea country is consistently rated one of the world's most beautiful train journeys. Book 2nd class observation cars or sit in open doors for the full experience.</p>
+        <div class="tc-tip">💡 Book Expo Rail seats in advance</div>
+      </div>
+      <div class="transport-card reveal reveal-delay-1">
+        <div class="tc-icon">🚌</div>
+        <h3>Buses</h3>
+        <p>The cheapest way to get around. SLTB government buses cover every corner of the island, while private intercity buses are faster. Air-conditioned express coaches link major cities comfortably.</p>
+        <div class="tc-tip">💡 AC buses: 3–4x the normal price</div>
+      </div>
+      <div class="transport-card reveal reveal-delay-2">
+        <div class="tc-icon">🛺</div>
+        <h3>Tuk-Tuks</h3>
+        <p>The iconic three-wheeled tuk-tuk (auto rickshaw) is the quintessential Sri Lankan experience. Perfect for short trips and exploring towns. Always negotiate the price before getting in — or use PickMe app.</p>
+        <div class="tc-tip">💡 Use PickMe for metered rides</div>
+      </div>
+      <div class="transport-card reveal">
+        <div class="tc-icon">✈️</div>
+        <h3>Domestic Flights</h3>
+        <p>Cinnamon Air and FitsAir operate seaplane and light aircraft services connecting Colombo to Jaffna, Trincomalee, Batticaloa, and Ratmalana. Fast but pricey — ideal for saving time.</p>
+        <div class="tc-tip">💡 Seaplanes land on lagoons</div>
+      </div>
+      <div class="transport-card reveal reveal-delay-1">
+        <div class="tc-icon">🚗</div>
+        <h3>Car Hire & Drivers</h3>
+        <p>Hiring a car with a driver for a week is one of the best ways to explore freely. Rates are reasonable and drivers double as guides and local experts. International driving permits allow self-driving.</p>
+        <div class="tc-tip">💡 LKD required for self-drive</div>
+      </div>
+      <div class="transport-card reveal reveal-delay-2">
+        <div class="tc-icon">🛥️</div>
+        <h3>Ferries & Boats</h3>
+        <p>Boat rides are essential for reaching Nainativu Island near Jaffna, whale watching at Mirissa, Madu River mangrove cruises, and crossing lagoons to reach remote beaches along the east coast.</p>
+        <div class="tc-tip">💡 Whale watching: Nov–Apr</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ECONOMY & EDUCATION ===== -->
+<section id="economy">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">Nation Building</span>
+      <h2 class="section-title">Education & Economy</h2>
+      <p class="section-sub">Sri Lanka has one of the highest literacy rates in South Asia, driven by a proud tradition of free education since 1945.</p>
+    </div>
+    <div class="economy-grid">
+      <div class="eco-card reveal">
+        <div class="eco-icon">📚</div>
+        <h3>Free Education</h3>
+        <p>Free education from primary to university level since 1945 — a landmark achievement that remains the backbone of Sri Lanka's human capital.</p>
+        <div class="eco-stat">93%</div>
+        <div style="font-size:0.7rem; color:var(--text-muted);">Literacy Rate</div>
+      </div>
+      <div class="eco-card reveal reveal-delay-1">
+        <div class="eco-icon">🎓</div>
+        <h3>Universities</h3>
+        <p>17 national universities including the University of Colombo, University of Peradeniya, and Moratuwa (Sri Lanka's top engineering school).</p>
+        <div class="eco-stat">17</div>
+        <div style="font-size:0.7rem; color:var(--text-muted);">National Universities</div>
+      </div>
+      <div class="eco-card reveal reveal-delay-2">
+        <div class="eco-icon">🍵</div>
+        <h3>Tea Industry</h3>
+        <p>Ceylon Tea — grown in the central highlands at elevations from 600m to 2,500m — is one of the world's most famous and exported teas.</p>
+        <div class="eco-stat">#3</div>
+        <div style="font-size:0.7rem; color:var(--text-muted);">Tea Exporter Globally</div>
+      </div>
+      <div class="eco-card reveal">
+        <div class="eco-icon">✈️</div>
+        <h3>Tourism</h3>
+        <p>Tourism is one of Sri Lanka's fastest-growing sectors, attracting over 2 million visitors annually before 2020, with the industry rebounding strongly.</p>
+        <div class="eco-stat">2M+</div>
+        <div style="font-size:0.7rem; color:var(--text-muted);">Visitors per Year</div>
+      </div>
+      <div class="eco-card reveal reveal-delay-1">
+        <div class="eco-icon">🌾</div>
+        <h3>Agriculture</h3>
+        <p>Beyond tea, Sri Lanka produces coconuts, rubber, rice, spices (cinnamon, pepper, cloves), and tropical fruits — many exported globally.</p>
+        <div class="eco-stat">28%</div>
+        <div style="font-size:0.7rem; color:var(--text-muted);">GDP from Agriculture</div>
+      </div>
+      <div class="eco-card reveal reveal-delay-2">
+        <div class="eco-icon">💻</div>
+        <h3>IT & Technology</h3>
+        <p>Sri Lanka's IT sector is rapidly growing, with a booming startup ecosystem and Colombo emerging as a regional tech hub attracting foreign investment.</p>
+        <div class="eco-stat">$1B+</div>
+        <div style="font-size:0.7rem; color:var(--text-muted);">IT Export Revenue</div>
+      </div>
+      <div class="eco-card reveal">
+        <div class="eco-icon">💎</div>
+        <h3>Gems & Jewelry</h3>
+        <p>Sri Lanka has been called the "Island of Gems" — blue sapphires, cat's eye, alexandrite, and rubies are mined here and exported worldwide.</p>
+        <div class="eco-stat">75+</div>
+        <div style="font-size:0.7rem; color:var(--text-muted);">Gem Varieties Found</div>
+      </div>
+      <div class="eco-card reveal reveal-delay-1">
+        <div class="eco-icon">🏭</div>
+        <h3>Garments & Apparel</h3>
+        <p>The apparel industry is a major export earner, with Sri Lankan factories supplying global brands with ethical, high-quality manufacturing.</p>
+        <div class="eco-stat">$5B</div>
+        <div style="font-size:0.7rem; color:var(--text-muted);">Annual Apparel Exports</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== INTERACTIVE TOOLS ===== -->
+<section id="interactive">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">Plan Your Visit</span>
+      <h2 class="section-title">Interactive Tools</h2>
+      <p class="section-sub">Everything you need to plan your perfect Sri Lanka trip.</p>
+    </div>
+    <div class="tools-grid">
+
+      <!-- Weather Widget -->
+      <div class="tool-card reveal">
+        <h3>🌤️ Weather Guide</h3>
+        <div class="weather-widget">
+          <select class="weather-city-select" id="weatherCity" onchange="updateWeather()">
+            <option value="colombo">Colombo (West)</option>
+            <option value="kandy">Kandy (Central)</option>
+            <option value="ella">Ella (Hill Country)</option>
+            <option value="trincomalee">Trincomalee (East)</option>
+            <option value="jaffna">Jaffna (North)</option>
+          </select>
+          <div class="weather-display" id="weatherDisplay">
+            <div class="weather-icon">☀️</div>
+            <div>
+              <div class="weather-temp">32°C</div>
+              <div class="weather-desc">Sunny & Humid</div>
+            </div>
+          </div>
+          <div class="weather-details">
+            <div class="weather-detail"><div class="wd-val" id="wHumid">82%</div><div class="wd-lbl">Humidity</div></div>
+            <div class="weather-detail"><div class="wd-val" id="wWind">14 km/h</div><div class="wd-lbl">Wind</div></div>
+            <div class="weather-detail"><div class="wd-val" id="wSeason">Dry Season</div><div class="wd-lbl">Season</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Currency Converter -->
+      <div class="tool-card reveal reveal-delay-1">
+        <h3>💱 Currency Converter</h3>
+        <div class="currency-converter">
+          <label>Amount</label>
+          <input type="number" id="currencyAmount" value="100" oninput="convertCurrency()">
+          <label>From Currency</label>
+          <select id="currencyFrom" onchange="convertCurrency()">
+            <option value="USD">🇺🇸 US Dollar (USD)</option>
+            <option value="EUR">🇪🇺 Euro (EUR)</option>
+            <option value="GBP">🇬🇧 British Pound (GBP)</option>
+            <option value="AUD">🇦🇺 Australian Dollar (AUD)</option>
+            <option value="INR">🇮🇳 Indian Rupee (INR)</option>
+          </select>
+          <div class="convert-arrow">⬇</div>
+          <div class="convert-result" id="convertResult">
+            <div class="cr-amount">30,000 LKR</div>
+            <div class="cr-label">Sri Lankan Rupees</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Language Phrasebook -->
+      <div class="tool-card reveal reveal-delay-2">
+        <h3>🗣️ Phrasebook</h3>
+        <div class="lang-switcher">
+          <button class="lang-btn active" onclick="setLang('si', this)">🇱🇰 Sinhala</button>
+          <button class="lang-btn" onclick="setLang('ta', this)">🌺 Tamil</button>
+        </div>
+        <div class="lang-phrases" id="langPhrases">
+          <div class="phrase"><div class="ph-en">Hello</div><div class="ph-local">ආයුබෝවන්</div><div class="ph-romanized">Āyubōwan</div></div>
+          <div class="phrase"><div class="ph-en">Thank you</div><div class="ph-local">ස්තූතියි</div><div class="ph-romanized">Sthūthiyi</div></div>
+          <div class="phrase"><div class="ph-en">How much?</div><div class="ph-local">කීයද?</div><div class="ph-romanized">Kīyada?</div></div>
+          <div class="phrase"><div class="ph-en">Beautiful!</div><div class="ph-local">ලස්සනයි</div><div class="ph-romanized">Lassanayi</div></div>
+          <div class="phrase"><div class="ph-en">Delicious!</div><div class="ph-local">රසයි!</div><div class="ph-romanized">Rasayi!</div></div>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div class="tool-card reveal">
+        <h3>🗺️ Sri Lanka Map</h3>
+        <div class="map-placeholder">
+          <div class="map-sri-lanka">🇱🇰</div>
+          <div class="map-pins">
+            <span class="map-pin">📍 Colombo</span>
+            <span class="map-pin">📍 Kandy</span>
+            <span class="map-pin">📍 Sigiriya</span>
+            <span class="map-pin">📍 Galle</span>
+            <span class="map-pin">📍 Ella</span>
+            <span class="map-pin">📍 Jaffna</span>
+            <span class="map-pin">📍 Yala</span>
+          </div>
+        </div>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.75rem; text-align:center;">65,610 km² · Island nation in the Indian Ocean</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== PHOTO GALLERY ===== -->
+<section id="gallery">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">Through the Lens</span>
+      <h2 class="section-title">Photo Gallery</h2>
+      <p class="section-sub">Sri Lanka in all its breathtaking, vibrant glory.</p>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item reveal" onclick="openLightbox('https://images.unsplash.com/photo-1552637707-8f87c77a6aea?w=1200&q=90')">
+        <img src="https://images.unsplash.com/photo-1552637707-8f87c77a6aea?w=800&q=80" alt="Sigiriya">
+        <div class="gallery-item-overlay"><span class="gallery-zoom">🔍</span></div>
+      </div>
+      <div class="gallery-item reveal reveal-delay-1" onclick="openLightbox('https://images.unsplash.com/photo-1588422600757-d048faa4fccd?w=1200&q=90')">
+        <img src="https://images.unsplash.com/photo-1588422600757-d048faa4fccd?w=500&q=80" alt="Kandy">
+        <div class="gallery-item-overlay"><span class="gallery-zoom">🔍</span></div>
+      </div>
+      <div class="gallery-item reveal reveal-delay-2" onclick="openLightbox('https://images.unsplash.com/photo-1578519050142-afb511e518de?w=1200&q=90')">
+        <img src="https://images.unsplash.com/photo-1578519050142-afb511e518de?w=500&q=80" alt="Mountains">
+        <div class="gallery-item-overlay"><span class="gallery-zoom">🔍</span></div>
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('https://images.unsplash.com/photo-1553603227-2358aabe821e?w=1200&q=90')">
+        <img src="https://images.unsplash.com/photo-1553603227-2358aabe821e?w=500&q=80" alt="Galle">
+        <div class="gallery-item-overlay"><span class="gallery-zoom">🔍</span></div>
+      </div>
+      <div class="gallery-item reveal reveal-delay-1" onclick="openLightbox('https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=1200&q=90')">
+        <img src="https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=500&q=80" alt="Elephant">
+        <div class="gallery-item-overlay"><span class="gallery-zoom">🔍</span></div>
+      </div>
+      <div class="gallery-item reveal reveal-delay-2" onclick="openLightbox('https://images.unsplash.com/photo-1580181588169-9c0f00b0a9ea?w=1200&q=90')">
+        <img src="https://images.unsplash.com/photo-1580181588169-9c0f00b0a9ea?w=800&q=80" alt="Yala">
+        <div class="gallery-item-overlay"><span class="gallery-zoom">🔍</span></div>
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=90')">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=80" alt="Beach">
+        <div class="gallery-item-overlay"><span class="gallery-zoom">🔍</span></div>
+      </div>
+      <div class="gallery-item reveal reveal-delay-1" onclick="openLightbox('https://images.unsplash.com/photo-1604999565976-8913ad2ddb7c?w=1200&q=90')">
+        <img src="https://images.unsplash.com/photo-1604999565976-8913ad2ddb7c?w=500&q=80" alt="Tea">
+        <div class="gallery-item-overlay"><span class="gallery-zoom">🔍</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NEWSLETTER ===== -->
+<section id="newsletter">
+  <h2>Stay Connected with Sri Lanka</h2>
+  <p>Get travel tips, cultural insights, seasonal guides, and destination updates delivered to your inbox.</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="your@email.com" id="nlEmail">
+    <button class="btn-primary" onclick="subscribeNewsletter()">✉️ Subscribe</button>
+  </div>
+  <p id="nlMessage" style="margin-top:1rem; font-size:0.85rem; color:var(--amber); display:none;"></p>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="fb-logo">🇱🇰 Discover Sri Lanka</div>
+        <p>The ultimate guide to the Pearl of the Indian Ocean — built with pride for travelers, learners, and everyone who loves this extraordinary island.</p>
+        <div class="social-links">
+          <a href="#" class="social-link">📘</a>
+          <a href="#" class="social-link">📸</a>
+          <a href="#" class="social-link">🐦</a>
+          <a href="#" class="social-link">▶️</a>
+          <a href="#" class="social-link">📌</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="#about">About Sri Lanka</a>
+        <a href="#all-destinations">Destinations</a>
+        <a href="#history">History</a>
+        <a href="#culture">Culture</a>
+        <a href="#food">Food</a>
+      </div>
+      <div class="footer-col">
+        <h4>Nature</h4>
+        <a href="#wildlife">Wildlife</a>
+        <a href="#beaches">Beaches</a>
+        <a href="#mountains">Mountains</a>
+        <a href="#transport">Transport</a>
+        <a href="#interactive">Plan Trip</a>
+      </div>
+      <div class="footer-col">
+        <h4>Info</h4>
+        <a href="#economy">Economy</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#">Visa Guide</a>
+        <a href="#">Travel Tips</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Discover Sri Lanka. Made with ❤️ for the world to explore.</span>
+      <div class="flag-row">
+        <span>🇱🇰</span>
+        <span>One Island. Endless Wonders.</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== LIGHTBOX ===== -->
+<div id="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-close">✕</div>
+</div>
+
+<!-- ===== SCROLL TOP ===== -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ===== NAVBAR SCROLL =====
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 80);
+  document.getElementById('scroll-top').classList.toggle('visible', window.scrollY > 400);
+});
+
+// ===== DARK MODE =====
+function toggleDark() {
+  const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('darkModeBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('slTheme', theme);
+}
+// Load saved theme
+const savedTheme = localStorage.getItem('slTheme');
+if (savedTheme) {
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.getElementById('darkModeBtn').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+}
+
+// ===== MOBILE MENU =====
+function toggleMobile() {
+  document.getElementById('navLinks').classList.toggle('mobile-open');
+}
+// Close mobile menu when a nav link is tapped
+document.getElementById('navLinks').querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.remove('mobile-open');
+  });
+});
+
+// ===== HERO SLIDESHOW =====
+let currentSlide = 0;
+const slides = document.querySelectorAll('.hero-slide');
+const dots = document.querySelectorAll('.hero-dot');
+function goSlide(n) {
+  slides[currentSlide].classList.remove('active');
+  dots[currentSlide].classList.remove('active');
+  currentSlide = n;
+  slides[currentSlide].classList.add('active');
+  dots[currentSlide].classList.add('active');
+}
+setInterval(() => goSlide((currentSlide + 1) % slides.length), 5000);
+
+// ===== COUNTER ANIMATION =====
+function animateCounter(el, target, suffix = '') {
+  const dur = 2000;
+  const step = target / (dur / 16);
+  let cur = 0;
+  const timer = setInterval(() => {
+    cur = Math.min(cur + step, target);
+    el.textContent = Math.floor(cur).toLocaleString() + suffix;
+    if (cur >= target) clearInterval(timer);
+  }, 16);
+}
+const counters = document.querySelectorAll('[data-count]');
+let countersStarted = false;
+const counterObserver = new IntersectionObserver(entries => {
+  if (!countersStarted && entries.some(e => e.isIntersecting)) {
+    countersStarted = true;
+    counters.forEach(el => animateCounter(el, parseInt(el.dataset.count)));
+    counterObserver.disconnect();
+  }
+}, { threshold: 0.3 });
+counters.forEach(el => counterObserver.observe(el));
+
+// ===== SCROLL REVEAL =====
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('revealed'); });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ===== SEARCH =====
+const searchData = [
+  { name: 'Sigiriya', type: 'Destination', icon: '🏰', href: '#all-destinations' },
+  { name: 'Kandy', type: 'Destination', icon: '🏔️', href: '#all-destinations' },
+  { name: 'Galle', type: 'Destination', icon: '🏛️', href: '#all-destinations' },
+  { name: 'Ella', type: 'Destination', icon: '🌿', href: '#all-destinations' },
+  { name: 'Nuwara Eliya', type: 'Destination', icon: '☕', href: '#all-destinations' },
+  { name: 'Colombo', type: 'Destination', icon: '🏙️', href: '#all-destinations' },
+  { name: 'Yala National Park', type: 'Wildlife', icon: '🐆', href: '#wildlife' },
+  { name: 'Adam\'s Peak', type: 'Mountain', icon: '⛰️', href: '#mountains' },
+  { name: 'Rice and Curry', type: 'Food', icon: '🍛', href: '#food' },
+  { name: 'Hoppers', type: 'Food', icon: '🥞', href: '#food' },
+  { name: 'Kottu Roti', type: 'Food', icon: '🍴', href: '#food' },
+  { name: 'Vesak Festival', type: 'Culture', icon: '🌕', href: '#culture' },
+  { name: 'Esala Perahera', type: 'Culture', icon: '🐘', href: '#culture' },
+  { name: 'Mirissa Beach', type: 'Beach', icon: '🐋', href: '#beaches' },
+  { name: 'Unawatuna', type: 'Beach', icon: '🤿', href: '#beaches' },
+  { name: 'Arugam Bay', type: 'Surf', icon: '🏄', href: '#beaches' },
+  { name: 'Elephants', type: 'Wildlife', icon: '🐘', href: '#wildlife' },
+  { name: 'Tea Plantations', type: 'Culture', icon: '🍵', href: '#economy' },
+  { name: 'Trincomalee', type: 'Destination', icon: '🌊', href: '#all-destinations' },
+  { name: 'Jaffna', type: 'Destination', icon: '🌺', href: '#all-destinations' },
+];
+function toggleSearch() {
+  document.getElementById('search-overlay').classList.toggle('active');
+  if (document.getElementById('search-overlay').classList.contains('active')) {
+    setTimeout(() => document.getElementById('searchInput').focus(), 100);
+  }
+}
+function fillSearch(v) {
+  document.getElementById('searchInput').value = v;
+  handleSearch(v);
+}
+function handleSearch(q) {
+  const res = document.getElementById('search-results');
+  if (!q.trim()) { res.innerHTML = ''; return; }
+  const matches = searchData.filter(d => d.name.toLowerCase().includes(q.toLowerCase()));
+  if (!matches.length) { res.innerHTML = '<div class="search-result-item">No results found</div>'; return; }
+  res.innerHTML = matches.slice(0, 8).map(d =>
+    `<a href="${d.href}" class="search-result-item" onclick="toggleSearch()">
+      <span class="icon">${d.icon}</span>
+      <div><strong>${d.name}</strong><br><span style="font-size:0.72rem;opacity:0.6">${d.type}</span></div>
+    </a>`
+  ).join('');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('search-overlay').classList.remove('active');
+    closeLightbox();
+  }
+});
+
+// ===== WEATHER DATA =====
+const weatherData = {
+  colombo: { icon: '⛅', temp: '32°C', desc: 'Warm & Humid', humid: '82%', wind: '14 km/h', season: 'SW Monsoon' },
+  kandy: { icon: '🌤️', temp: '26°C', desc: 'Mild & Pleasant', humid: '74%', wind: '8 km/h', season: 'Moderate' },
+  ella: { icon: '🌫️', temp: '19°C', desc: 'Cool & Misty', humid: '88%', wind: '12 km/h', season: 'Cloud Forest' },
+  trincomalee: { icon: '☀️', temp: '34°C', desc: 'Hot & Sunny', humid: '70%', wind: '18 km/h', season: 'Dry Season' },
+  jaffna: { icon: '🌞', temp: '36°C', desc: 'Very Hot & Dry', humid: '62%', wind: '22 km/h', season: 'Hot Season' },
+};
+function updateWeather() {
+  const city = document.getElementById('weatherCity').value;
+  const d = weatherData[city];
+  document.getElementById('weatherDisplay').innerHTML = `
+    <div class="weather-icon">${d.icon}</div>
+    <div><div class="weather-temp">${d.temp}</div><div class="weather-desc">${d.desc}</div></div>`;
+  document.getElementById('wHumid').textContent = d.humid;
+  document.getElementById('wWind').textContent = d.wind;
+  document.getElementById('wSeason').textContent = d.season;
+}
+
+// ===== CURRENCY CONVERTER =====
+const rates = { USD: 300, EUR: 325, GBP: 380, AUD: 195, INR: 3.6 };
+function convertCurrency() {
+  const amount = parseFloat(document.getElementById('currencyAmount').value) || 0;
+  const from = document.getElementById('currencyFrom').value;
+  const lkr = amount * rates[from];
+  document.getElementById('convertResult').innerHTML = `
+    <div class="cr-amount">${lkr.toLocaleString()} LKR</div>
+    <div class="cr-label">Sri Lankan Rupees (approx.)</div>`;
+}
+
+// ===== LANGUAGE SWITCHER =====
+const phrases = {
+  si: [
+    { en: 'Hello', local: 'ආයුබෝවන්', roman: 'Āyubōwan' },
+    { en: 'Thank you', local: 'ස්තූතියි', roman: 'Sthūthiyi' },
+    { en: 'How much?', local: 'කීයද?', roman: 'Kīyada?' },
+    { en: 'Beautiful!', local: 'ලස්සනයි', roman: 'Lassanayi' },
+    { en: 'Delicious!', local: 'රසයි!', roman: 'Rasayi!' },
+  ],
+  ta: [
+    { en: 'Hello', local: 'வணக்கம்', roman: 'Vaṇakkam' },
+    { en: 'Thank you', local: 'நன்றி', roman: 'Naṉṟi' },
+    { en: 'How much?', local: 'எவ்வளவு?', roman: 'Evvaḷavu?' },
+    { en: 'Beautiful!', local: 'அழகு!', roman: 'Aḻaku!' },
+    { en: 'Delicious!', local: 'சுவையாக!', roman: 'Cuvaiyāka!' },
+  ]
+};
+function setLang(lang, btn) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const p = phrases[lang];
+  document.getElementById('langPhrases').innerHTML = p.map(ph =>
+    `<div class="phrase">
+      <div class="ph-en">${ph.en}</div>
+      <div class="ph-local">${ph.local}</div>
+      <div class="ph-romanized">${ph.roman}</div>
+    </div>`
+  ).join('');
+}
+
+// ===== BEACH FILTER =====
+function filterBeaches(coast, btn) {
+  document.querySelectorAll('.beach-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.beach-card').forEach(card => {
+    card.style.display = (coast === 'all' || card.dataset.coast === coast) ? '' : 'none';
+  });
+}
+
+// ===== LIGHTBOX =====
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// ===== NEWSLETTER =====
+function subscribeNewsletter() {
+  const email = document.getElementById('nlEmail').value;
+  const msg = document.getElementById('nlMessage');
+  if (!email || !email.includes('@')) {
+    msg.textContent = '⚠️ Please enter a valid email address.';
+    msg.style.display = 'block'; return;
+  }
+  msg.textContent = '✅ Thank you! You\'re now subscribed to Discover Sri Lanka updates!';
+  msg.style.display = 'block';
+  document.getElementById('nlEmail').value = '';
+}
+</script>
+</body>
+</html>
